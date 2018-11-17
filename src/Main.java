@@ -23,15 +23,15 @@ public class Main {
         }
 
         Collections.sort(arrPopulation, individualFitness);
-
         displayCurrentPopulation();
+        
 
         
-        while (sameFitnessCount<5){
-        	System.out.println("\nGeneration : "+arrPopulation);
+        while (sameFitnessCount<5){        	
             lastMaxFitness = arrPopulation.get(0).getFitness();
-            generationCheck();
             Collections.sort(arrPopulation, individualFitness);
+            generationCheck();
+            displayCurrentPopulation();
             currentMaxFitness = arrPopulation.get(0).getFitness();
             if (lastMaxFitness == currentMaxFitness){
             	// System.out.println(sameFitnessCount+" fitness: "+ lastMaxFitness);            	
@@ -40,8 +40,10 @@ public class Main {
             	System.out.println("resetting fit count");
                 sameFitnessCount = 0;
             }
+           
         }
-        System.out.println("Final: "+arrPopulation.get(0)+" fitness: "+arrPopulation.get(0).fitness);
+        
+        System.out.println("\n\n***Final: "+arrPopulation.get(0)+" fitness: "+arrPopulation.get(0).fitness+"***");
     }
 
    
@@ -169,12 +171,25 @@ public class Main {
 
         float random = 0 + rn.nextFloat() * (1 - 0);
 
-    	ArrayList<Individual> arrParents = new ArrayList<>();
-        arrParents.add(arrPopulation.get(0));
-        arrParents.add(arrPopulation.get(1));
+        ArrayList<Individual> arrParents = new ArrayList<Individual>();
+        ArrayList<Integer> parent1 = new ArrayList<Integer>();
+        ArrayList<Integer> parent2= new ArrayList<Integer>();
+        for (int i: arrPopulation.get(0).getIndividual()){
+        	parent1.add(i);	
+        }
+        for (int i:arrPopulation.get(1).getIndividual()){
+        	parent2.add(i);
+        }
+        
+        
+        arrParents.add(new Individual(parent1));
+        arrParents.add(new Individual(parent2));
         System.out.println("Selected Parents : "+arrParents);
       //  ArrayList<Individual> arrChild = new ArrayList<>();
-
+     //  System.out.println("hashcode for arrParents ,parent1 :"+arrParents.get(0).hashCode());
+      // System.out.println("hashcode for arrParents ,parent1:"+arrPopulation.get(0).hashCode());
+        
+        
     	if(random<=crossOverProb){
     	    System.out.println("In crossOver");
             doCrossOver(arrParents);
@@ -186,8 +201,8 @@ public class Main {
     }
 
     public static void doCrossOver(ArrayList<Individual> arrParents){
-        Individual childOne = arrParents.get(0);
-        Individual childTwo = arrParents.get(1);
+        Individual childOne = new Individual(arrParents.get(0).getIndividual());
+        Individual childTwo = new Individual(arrParents.get(1).getIndividual());
        
         // int random = (int)(Math.random() * 4 );//random number of digits
         int random=rn.nextInt(3 - 1 + 1) + 1;
@@ -208,11 +223,10 @@ public class Main {
     
         System.out.println("CrossOver" +childOne);
         System.out.println("CrossOver" +childTwo);
-
-
-
+        System.out.println("Current Population :"+arrPopulation);
         manipulateChildCreation(childOne,0);
         manipulateChildCreation(childTwo,1);
+        System.out.println("After constraint check :"+arrPopulation);
         System.out.println("-----");
     }
 
@@ -233,21 +247,30 @@ public class Main {
     
         }
         System.out.println("Mutation" +arrParents);
-
+        System.out.println("Current Population :"+arrPopulation);
         manipulateChildCreation(arrParents.get(0),0);
         manipulateChildCreation(arrParents.get(1),1);
+        System.out.println("After constraint check :"+arrPopulation);
        System.out.println("-----");
     }
 
     public static void manipulateChildCreation(Individual individual,int index){
     	
-    	System.out.println("Current Population :"+arrPopulation);
+    	
     	
         if (areAllConstraintSatisfied(arrPopulation,individual.getIndividual())){
-            arrPopulation.remove(index);
+        	System.out.println("GENERATION CHANGING HERE!!!");
+            arrPopulation.remove(index);            
+            setFitness(individual);//cal and set the fitness of the new kid!!
             arrPopulation.add(individual);
+            Collections.sort(arrPopulation, individualFitness);
+        }      
+        else
+        {
+        	System.out.println("CONSTRAINTS OF THE POPULATION NOT MET!!!");
         }
-        System.out.println("After constraint check :"+arrPopulation);
+        	
+        
     }
 
 }
