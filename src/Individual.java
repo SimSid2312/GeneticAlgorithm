@@ -13,7 +13,7 @@ public class Individual {
 	
 	public ArrayList<Integer> getIndividual(){
 	
-		return individual;
+		return this.individual;
 	}
 	
 	public void setFitness(float fitness){
@@ -22,7 +22,7 @@ public class Individual {
 	
 	public float getFitness(){
 		
-		return fitness;
+		return this.fitness;
 	}
 	
 	@Override
