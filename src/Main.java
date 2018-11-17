@@ -6,27 +6,29 @@ import java.util.Random;
 public class Main {
 
     static Random rn = new Random();
+    static int populationSize=6;
+    static double crossOverProb=0.75;
+    static double mutationProb=0.01;
+    
+    
     public static void main(String[] args) {
-
-        //random population of size  - 8
-        ArrayList<Individual> population = preparePopulation(8);
+        
+       ArrayList<Individual> population = preparePopulation(populationSize);
 
         // calculate and set the fitness of each individual
         for (int i=0;i<population.size();i++){
-            fitness(population.get(i));
+            setFitness(population.get(i));
         }
 
         //Sorting the population (criteria : fitness)
-        Collections.sort(population, individualFitness);
+         Collections.sort(population, individualFitness);
 
-        //Display each individual of the population and their fitness
+       //Display each individual of the population and their fitness
         for(Individual indi:population){
-
             System.out.println("Individual: "+indi.getIndividual()+" Fitness: "+indi.getFitness());
         }
-
-
-
+        
+        crossOverGeneration(population);
     }
 
 
@@ -49,10 +51,14 @@ public class Main {
     };
 
 
-
-
     public static String makeStringFromArray(ArrayList<Integer> arrInvestmentDecision){
-        return "";
+        
+    	String lastestIndividualToString = "";
+        for(int i=0;i<arrInvestmentDecision.size();i++){
+        	lastestIndividualToString+=arrInvestmentDecision.get(i);
+        }
+        return lastestIndividualToString;
+     
     }
 
     public static ArrayList<Individual> preparePopulation(int populationSize){
@@ -62,7 +68,7 @@ public class Main {
 
         while (arrPopulation.size()<populationSize){
             arrInvestment = prepareInvestmentArray();
-            if (areAllConstraintSatisfied(arrInvestment)){
+            if (areAllConstraintSatisfied(arrPopulation,arrInvestment)){
                 arrPopulation.add(new Individual(arrInvestment));
             }
         }
@@ -71,20 +77,34 @@ public class Main {
 
     public static ArrayList<Integer> prepareInvestmentArray(){
         ArrayList<Integer> arrInvestment = new ArrayList<>();
-
         for (int i = 0 ; i < 4; i++){
             arrInvestment.add(Math.abs(rn.nextInt()%2));
         }
         return arrInvestment;
     }
 
-    public static boolean areAllConstraintSatisfied(ArrayList<Integer> arrInvestmentDecision){
+    public static boolean areAllConstraintSatisfied(ArrayList<Individual> arrPopulation,ArrayList<Integer> arrInvestmentDecision){
         if (isConstraintForYearOneSatisfied(arrInvestmentDecision)&&
-                (isConstraintForYearTwoSatisfied(arrInvestmentDecision)&&
-                        isConstraintForYearThreeSatisfied(arrInvestmentDecision))){
+            isConstraintForYearTwoSatisfied(arrInvestmentDecision)&&
+            isConstraintForYearThreeSatisfied(arrInvestmentDecision)&&
+            !isExistingInPopulation(arrPopulation,arrInvestmentDecision)){
             return true;
         }
         return false;
+    }
+
+    public static boolean isExistingInPopulation(ArrayList<Individual> arrPopulation,ArrayList<Integer> arrInvestmentDecision){   
+    	Boolean investmentExists=false;         //false - not existing and true - exist
+    	String latestInvestment=makeStringFromArray(arrInvestmentDecision);
+    	for(Individual ind:arrPopulation){
+    		if(ind.toString().equals(latestInvestment))
+    		{
+       			investmentExists=true;
+    			break;
+    		}
+    			
+    	}
+        return investmentExists;
     }
 
     public static boolean isConstraintForYearOneSatisfied(ArrayList<Integer> arrInvestmentDecision){
@@ -118,7 +138,7 @@ public class Main {
     }
 
     //Fitness Function
-    public static void fitness(Individual individual) {
+    public static void setFitness(Individual individual) {
         ArrayList<Integer> parent = individual.getIndividual();
         float fitness =  (float) (0.2 * parent.get(0)
                 + 0.3 * parent.get(1)
@@ -127,7 +147,22 @@ public class Main {
         individual.setFitness(fitness);
     }
 
-
+    
+    //CrossOver Function
+    public static void crossOverGeneration(ArrayList<Individual> arrPopulation){
+    	
+    	//1. fetch the top fittest 
+    	//int parent1Index=0;
+    	//int parent2Index=1;
+    	
+    	//System.out.println(arrPopulation.get(parent1Index)+" "+arrPopulation.get(parent2Index));
+    	for (int parent1Index=0;parent1Index<arrPopulation.size();parent1Index++){
+    		 
+    		//for(int parent2Index)
+    		
+    	}
+    	
+    }
 
 
 
