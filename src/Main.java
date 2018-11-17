@@ -11,24 +11,37 @@ public class Main {
     static double mutationProb=0.01;
     static ArrayList<Individual> arrPopulation = new ArrayList<>();
 
+    static float lastMaxFitness = -1;
+    static float currentMaxFitness = 0;
+
     public static void main(String[] args) {
 
         arrPopulation = preparePopulation(populationSize);
 
-        // calculate and set the fitness of each individual
         for (int i=0;i<arrPopulation.size();i++){
             setFitness(arrPopulation.get(i));
         }
 
-        //Sorting the population (criteria : fitness)
-         Collections.sort(arrPopulation, individualFitness);
+        Collections.sort(arrPopulation, individualFitness);
 
-       //Display each individual of the population and their fitness
         for(Individual indi:arrPopulation){
             System.out.println("Individual: "+indi.getIndividual()+" Fitness: "+indi.getFitness());
         }
-        
-        crossOverGeneration(arrPopulation);
+
+        int sameFitnessCount = 0;
+        while (sameFitnessCount<5){
+            System.out.println(sameFitnessCount);
+            lastMaxFitness = arrPopulation.get(0).getFitness();
+            generationCheck();
+            Collections.sort(arrPopulation, individualFitness);
+            currentMaxFitness = arrPopulation.get(0).getFitness();
+            if (lastMaxFitness == currentMaxFitness){
+                sameFitnessCount++;
+            }else{
+                sameFitnessCount = 0;
+            }
+        }
+        System.out.println("Final"+arrPopulation.get(0));
     }
 
     // Comparator Function - Sorting Individual Objects Fitness Property
@@ -38,7 +51,6 @@ public class Main {
 
             float fit1 =  ind1.getFitness();
             float fit2 =  ind2.getFitness();
-
             //Descending order sorting--
             if (fit1>fit2)
                 return -1;
@@ -134,7 +146,6 @@ public class Main {
         return false;
     }
 
-    //Fitness Function
     public static void setFitness(Individual individual) {
         ArrayList<Integer> parent = individual.getIndividual();
         float fitness =  (float) (0.2 * parent.get(0)
@@ -144,8 +155,9 @@ public class Main {
         individual.setFitness(fitness);
     }
 
-    //CrossOver Function
-    public static void crossOverGeneration(ArrayList<Individual> arrPopulation){
+
+
+    public static void generationCheck(){
 
         float random = 0 + rn.nextFloat() * (1 - 0);
 
@@ -155,13 +167,14 @@ public class Main {
 
         ArrayList<Individual> arrChild = new ArrayList<>();
 
-    	if(random<=0.75){
-           doCrossOver(arrParents);
+    	if(random<=crossOverProb){
+    	    System.out.println("In crossOver");
+            doCrossOver(arrParents);
         }else{
-    	    doMutation(arrParents);
+            System.out.println("In mutation");
+            doMutation(arrParents);
         }
 
-    	
     }
 
     public static void doCrossOver(ArrayList<Individual> arrParents){
@@ -176,6 +189,11 @@ public class Main {
                 childTwo.getIndividual().set(i,childOne.getIndividual().get(i));
             }
         }
+
+        System.out.println("CrossOver" +childOne);
+        System.out.println("CrossOver" +childTwo);
+
+
 
         manipulateChildCreation(childOne,0);
         manipulateChildCreation(childTwo,1);
@@ -196,6 +214,7 @@ public class Main {
                   }
             }
         }
+        System.out.println("Mutation" +arrParents);
 
         manipulateChildCreation(arrParents.get(0),0);
         manipulateChildCreation(arrParents.get(1),1);
