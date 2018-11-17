@@ -10,7 +10,7 @@ public class Main {
     static double crossOverProb=0.75;
     static double mutationProb=0.01;
     static ArrayList<Individual> arrPopulation = new ArrayList<>();
-
+    static int sameFitnessCount = 0;
     static float lastMaxFitness = -1;
     static float currentMaxFitness = 0;
 
@@ -24,26 +24,34 @@ public class Main {
 
         Collections.sort(arrPopulation, individualFitness);
 
-        for(Individual indi:arrPopulation){
-            System.out.println("Individual: "+indi.getIndividual()+" Fitness: "+indi.getFitness());
-        }
+        displayCurrentPopulation();
 
-        int sameFitnessCount = 0;
+        
         while (sameFitnessCount<5){
-            System.out.println(sameFitnessCount);
+        	System.out.println("\nGeneration : "+arrPopulation);
             lastMaxFitness = arrPopulation.get(0).getFitness();
             generationCheck();
             Collections.sort(arrPopulation, individualFitness);
             currentMaxFitness = arrPopulation.get(0).getFitness();
             if (lastMaxFitness == currentMaxFitness){
+            	// System.out.println(sameFitnessCount+" fitness: "+ lastMaxFitness);            	
                 sameFitnessCount++;
             }else{
+            	System.out.println("resetting fit count");
                 sameFitnessCount = 0;
             }
         }
-        System.out.println("Final"+arrPopulation.get(0));
+        System.out.println("Final: "+arrPopulation.get(0)+" fitness: "+arrPopulation.get(0).fitness);
     }
 
+   
+    public static void displayCurrentPopulation(){
+    	
+    	 for(Individual indi:arrPopulation){
+             System.out.println("Individual: "+indi.getIndividual()+" Fitness: "+indi.getFitness());
+         }
+    }
+    
     // Comparator Function - Sorting Individual Objects Fitness Property
     public static Comparator<Individual> individualFitness = new Comparator<Individual>() {
 
@@ -164,8 +172,8 @@ public class Main {
     	ArrayList<Individual> arrParents = new ArrayList<>();
         arrParents.add(arrPopulation.get(0));
         arrParents.add(arrPopulation.get(1));
-
-        ArrayList<Individual> arrChild = new ArrayList<>();
+        System.out.println("Selected Parents : "+arrParents);
+      //  ArrayList<Individual> arrChild = new ArrayList<>();
 
     	if(random<=crossOverProb){
     	    System.out.println("In crossOver");
@@ -180,16 +188,24 @@ public class Main {
     public static void doCrossOver(ArrayList<Individual> arrParents){
         Individual childOne = arrParents.get(0);
         Individual childTwo = arrParents.get(1);
-        ArrayList<Individual> arrChild = new ArrayList<>();
-
-        int random = (int)(Math.random() * 4 );
+       
+        // int random = (int)(Math.random() * 4 );//random number of digits
+        int random=rn.nextInt(3 - 1 + 1) + 1;
+        System.out.println("random : "+random);
         for (int i = 0 ; i < 4; i++){
-            if (i<random){
-                childOne.getIndividual().set(i,childTwo.getIndividual().get(i));
-                childTwo.getIndividual().set(i,childOne.getIndividual().get(i));
-            }
+                
+        	   if(i<(random))
+        	   {             	 
+              	 System.out.println("Cross over at index: "+ i+" child one :"+childOne.getIndividual().get(i)+" child two: "+childTwo.getIndividual().get(i));
+              	 int childOneBit=childOne.getIndividual().get(i);
+              	 childOne.getIndividual().set(i,childTwo.getIndividual().get(i)); 
+              	 childTwo.getIndividual().set(i,childOneBit);
+                 
+        	   }
+            
         }
-
+        
+    
         System.out.println("CrossOver" +childOne);
         System.out.println("CrossOver" +childTwo);
 
@@ -197,35 +213,41 @@ public class Main {
 
         manipulateChildCreation(childOne,0);
         manipulateChildCreation(childTwo,1);
+        System.out.println("-----");
     }
 
     public static void doMutation(ArrayList<Individual> arrParents){
 
-        for(Individual ind:arrParents){
-
+        for(Individual ind:arrParents){        		
             for(int i=0;i<ind.getIndividual().size();i++){
                 float random = 0 + rn.nextFloat() * (1 - 0);
                 if(random <=mutationProb ) {
+                	System.out.println("For Individual : "+ ind+" Mutating at index : "+ i+" random num: "+random);
                     if (ind.getIndividual().get(i) == 1)
                         ind.getIndividual().set(i,0);
                     else
                         ind.getIndividual().set(i, 1);
-
                   }
+               
             }
+    
         }
         System.out.println("Mutation" +arrParents);
 
         manipulateChildCreation(arrParents.get(0),0);
         manipulateChildCreation(arrParents.get(1),1);
-
+       System.out.println("-----");
     }
 
     public static void manipulateChildCreation(Individual individual,int index){
+    	
+    	System.out.println("Current Population :"+arrPopulation);
+    	
         if (areAllConstraintSatisfied(arrPopulation,individual.getIndividual())){
             arrPopulation.remove(index);
             arrPopulation.add(individual);
         }
+        System.out.println("After constraint check :"+arrPopulation);
     }
 
 }
