@@ -9,28 +9,27 @@ public class Main {
     static int populationSize=6;
     static double crossOverProb=0.75;
     static double mutationProb=0.01;
-    
-    
+    static ArrayList<Individual> arrPopulation = new ArrayList<>();
+
     public static void main(String[] args) {
-        
-       ArrayList<Individual> population = preparePopulation(populationSize);
+
+        arrPopulation = preparePopulation(populationSize);
 
         // calculate and set the fitness of each individual
-        for (int i=0;i<population.size();i++){
-            setFitness(population.get(i));
+        for (int i=0;i<arrPopulation.size();i++){
+            setFitness(arrPopulation.get(i));
         }
 
         //Sorting the population (criteria : fitness)
-         Collections.sort(population, individualFitness);
+         Collections.sort(arrPopulation, individualFitness);
 
        //Display each individual of the population and their fitness
-        for(Individual indi:population){
+        for(Individual indi:arrPopulation){
             System.out.println("Individual: "+indi.getIndividual()+" Fitness: "+indi.getFitness());
         }
         
-        crossOverGeneration(population);
+        crossOverGeneration(arrPopulation);
     }
-
 
     // Comparator Function - Sorting Individual Objects Fitness Property
     public static Comparator<Individual> individualFitness = new Comparator<Individual>() {
@@ -49,7 +48,6 @@ public class Main {
                 return 0;
         }
     };
-
 
     public static String makeStringFromArray(ArrayList<Integer> arrInvestmentDecision){
         
@@ -97,8 +95,7 @@ public class Main {
     	Boolean investmentExists=false;         //false - not existing and true - exist
     	String latestInvestment=makeStringFromArray(arrInvestmentDecision);
     	for(Individual ind:arrPopulation){
-    		if(ind.toString().equals(latestInvestment))
-    		{
+    		if(ind.toString().equals(latestInvestment)) {
        			investmentExists=true;
     			break;
     		}
@@ -147,23 +144,71 @@ public class Main {
         individual.setFitness(fitness);
     }
 
-    
     //CrossOver Function
     public static void crossOverGeneration(ArrayList<Individual> arrPopulation){
-    	
-    	//1. fetch the top fittest 
-    	//int parent1Index=0;
-    	//int parent2Index=1;
-    	
-    	//System.out.println(arrPopulation.get(parent1Index)+" "+arrPopulation.get(parent2Index));
-    	for (int parent1Index=0;parent1Index<arrPopulation.size();parent1Index++){
-    		 
-    		//for(int parent2Index)
-    		
-    	}
+
+        float random = 0 + rn.nextFloat() * (1 - 0);
+
+    	ArrayList<Individual> arrParents = new ArrayList<>();
+        arrParents.add(arrPopulation.get(0));
+        arrParents.add(arrPopulation.get(1));
+
+        ArrayList<Individual> arrChild = new ArrayList<>();
+
+    	if(random<=0.75){
+           doCrossOver(arrParents);
+        }else{
+    	    doMutation(arrParents);
+        }
+
     	
     }
 
+    public static void doCrossOver(ArrayList<Individual> arrParents){
+        Individual childOne = arrParents.get(0);
+        Individual childTwo = arrParents.get(1);
+        ArrayList<Individual> arrChild = new ArrayList<>();
 
+        int random = (int)(Math.random() * 4 );
+        for (int i = 0 ; i < 4; i++){
+            if (i<random){
+                childOne.getIndividual().set(i,childTwo.getIndividual().get(i));
+                childTwo.getIndividual().set(i,childOne.getIndividual().get(i));
+            }
+        }
+
+        manipulateChildCreation(childOne,0);
+        manipulateChildCreation(childTwo,1);
+    }
+
+    public static void doMutation(ArrayList<Individual> arrParents){
+
+        for(Individual ind:arrParents){
+
+            for(int i=0;i<ind.getIndividual().size();i++){
+                float random = 0 + rn.nextFloat() * (1 - 0);
+                if(random <=mutationProb ) {
+                    if (ind.getIndividual().get(i) == 1)
+                        ind.getIndividual().set(i,0);
+                    else
+                        ind.getIndividual().set(i, 1);
+
+                  }
+            }
+        }
+
+        manipulateChildCreation(arrParents.get(0),0);
+        manipulateChildCreation(arrParents.get(1),1);
+
+    }
+
+    public static void manipulateChildCreation(Individual individual,int index){
+        if (areAllConstraintSatisfied(arrPopulation,individual.getIndividual())){
+            arrPopulation.remove(index);
+            arrPopulation.add(individual);
+        }
+    }
 
 }
+
+
