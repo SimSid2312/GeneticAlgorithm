@@ -29,7 +29,7 @@ public class Main {
         
         while (sameFitnessCount<5){        	
             lastMaxFitness = arrPopulation.get(0).getFitness();
-            Collections.sort(arrPopulation, individualFitness);
+            Collections.sort(arrPopulation, individualFitness);// this can be commented
             generationCheck();
             displayCurrentPopulation();
             currentMaxFitness = arrPopulation.get(0).getFitness();
