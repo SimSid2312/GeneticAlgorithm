@@ -25,14 +25,18 @@ public class Main {
         }
 
         Collections.sort(arrPopulation, individualFitness);
+        displayMutationCrossoverProbabilities();
         displayCurrentPopulation();
+        
         
         while (sameFitnessCount<5){        	
             lastMaxFitness = arrPopulation.get(0).getFitness();
             lastAverageFitness = averageFitness();
             Collections.sort(arrPopulation, individualFitness);// this can be commented
             generationCheck();
+            displayMutationCrossoverProbabilities();
             displayCurrentPopulation();
+            
             currentAverageFitness = averageFitness();
             currentMaxFitness = arrPopulation.get(0).getFitness();
             if (lastMaxFitness == currentMaxFitness && lastAverageFitness == currentAverageFitness){
@@ -59,8 +63,12 @@ public class Main {
         return averageFitness;
     }
 
-   
+    public static void displayMutationCrossoverProbabilities(){
+       	System.out.println("Mutation Probability : "+mutationProb+" CrossOver Probability: "+crossOverProb+" Population Size:"+arrPopulation.size());
+    }
+    
     public static void displayCurrentPopulation(){
+    	
     	 for(Individual indi:arrPopulation){
              System.out.println("Individual: "+indi.getIndividual()+" Fitness: "+indi.getFitness());
          }
@@ -246,11 +254,11 @@ public class Main {
                   }
             }
         }
-        System.out.println("Mutation" +arrParents);
-        System.out.println("Current Population :"+arrPopulation);
+       // System.out.println("Mutation" +arrParents);
+      //  System.out.println("Current Population :"+arrPopulation);
         manipulateChildCreation(arrParents.get(0),0);
         manipulateChildCreation(arrParents.get(1),1);
-        System.out.println("After constraint check :"+arrPopulation);
+     //   System.out.println("After constraint check :"+arrPopulation);
     }
 
     public static void manipulateChildCreation(Individual individual,int index){
@@ -260,7 +268,7 @@ public class Main {
             setFitness(individual);//cal and set the fitness of the new kid!!
             arrPopulation.add(individual);
             Collections.sort(arrPopulation, individualFitness);
-            System.out.println("child added");
+            System.out.println("child "+individual.getIndividual()+" added");
         }
     }
 
